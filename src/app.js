@@ -10,16 +10,14 @@ const app = express();
 app.use(morgan('dev'));
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
     console.info(`The Server is running on port 🚀🚀🚀 ${PORT} 🚀🚀🚀`);
 });
 
-app.use('/', (req, res, next) => {
-    res.status(200).json({ message: `Hello api handle spreadsheet... ${process.env.ENVIRONMENT}` });
-});
+app.use(require('./routes/app'));
 
 app.use((req, res, next) => {
     const erro = new Error(`Route not found...`);
@@ -29,8 +27,9 @@ app.use((req, res, next) => {
 
 app.use((error, req, res, next) => {
     res.status(error.status || 500);
-    return res.json({
+    return res.send({
         erro: {
+            code: error.code,
             message: error.message
         }
     });
